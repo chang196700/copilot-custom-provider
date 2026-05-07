@@ -337,7 +337,7 @@ export class CopilotCustomProviderApp extends LitElement {
 			type: preset?.type ?? 'openai-compatible',
 			name: 'New Provider',
 			description: '',
-			baseUrl: preset?.defaultBaseUrl ?? 'https://api.openai.com/v1',
+			baseUrl: preset?.defaultBaseUrl ?? '',
 			keyStorage: 'secret',
 			presetId: preset?.id,
 			models: [],
@@ -354,9 +354,9 @@ export class CopilotCustomProviderApp extends LitElement {
 		if (!preset || !this.editing) return;
 		this.editing = {
 			...this.editing,
-			type: preset.type,
+			...(preset.type !== undefined ? { type: preset.type } : {}),
 			name: preset.label,
-			baseUrl: preset.defaultBaseUrl,
+			...(preset.defaultBaseUrl !== undefined ? { baseUrl: preset.defaultBaseUrl } : {}),
 			presetId: preset.id,
 			extraHeaders: preset.defaultHeaders ? { ...preset.defaultHeaders } : undefined,
 			models:

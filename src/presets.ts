@@ -3,11 +3,17 @@ import type { PresetTemplate } from './types';
 /** Built-in preset templates. Users pick one to pre-fill a provider form. */
 export const PRESETS: PresetTemplate[] = [
 	{
-		id: 'custom-openai',
-		label: 'Custom (OpenAI Compatible)',
+		id: 'custom',
+		label: 'Custom',
+		description: 'Blank template — fill in all fields manually.',
+	},
+	{
+		id: 'openai',
+		label: 'OpenAI',
 		type: 'openai-compatible',
 		defaultBaseUrl: 'https://api.openai.com/v1',
-		description: 'Generic OpenAI compatible endpoint.',
+		description: 'OpenAI official API.',
+		apiKeyHint: 'sk-...',
 	},
 	{
 		id: 'deepseek',

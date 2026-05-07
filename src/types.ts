@@ -64,8 +64,8 @@ export interface ProviderConfigStoreShape {
 export interface PresetTemplate {
 	id: string;
 	label: string;
-	type: ProviderType;
-	defaultBaseUrl: string;
+	type?: ProviderType;
+	defaultBaseUrl?: string;
 	description?: string;
 	recommendedModels?: ModelDefinition[];
 	defaultHeaders?: Record<string, string>;
