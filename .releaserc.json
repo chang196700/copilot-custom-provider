@@ -6,7 +6,7 @@
 		["@semantic-release/changelog", { "changelogFile": "CHANGELOG.md" }],
 		["@semantic-release/npm", { "npmPublish": false }],
 		["@semantic-release/exec", {
-			"prepareCmd": "pnpm run package",
+			"prepareCmd": "mkdir -p dist && pnpm run package",
 			"publishCmd": "vsce publish --no-dependencies --packagePath dist/copilot-custom-provider-${nextRelease.version}.vsix"
 		}],
 		["@semantic-release/github", {
