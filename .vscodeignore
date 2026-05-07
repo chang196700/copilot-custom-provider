@@ -1,0 +1,16 @@
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.node-version
+.oxlintrc.json
+tsconfig.json
+tsconfig.webview.json
+esbuild.webview.mjs
+pnpm-lock.yaml
+**/*.map
+**/*.ts
+!out/**/*.js
+!out/**/*.css
+!out/**/*.html
+node_modules/**

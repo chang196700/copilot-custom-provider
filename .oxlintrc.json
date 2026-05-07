@@ -1,0 +1,9 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": ["typescript"],
+	"rules": {
+		"no-unused-vars": "off",
+		"@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
+	},
+	"ignorePatterns": ["out/**", "node_modules/**", "src/webview/ui/**"]
+}

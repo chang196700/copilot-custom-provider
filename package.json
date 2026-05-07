@@ -1,0 +1,171 @@
+{
+	"name": "copilot-custom-provider",
+	"displayName": "Copilot Custom Provider",
+	"description": "Add any OpenAI / Anthropic / Gemini / Azure compatible provider into the GitHub Copilot Chat model picker. Bring your own keys, models and providers.",
+	"version": "0.1.0",
+	"publisher": "chang196700",
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.116.0",
+		"node": "24.15.0"
+	},
+	"packageManager": "pnpm@10.33.2",
+	"extensionDependencies": [
+		"github.copilot-chat"
+	],
+	"extensionKind": [
+		"workspace"
+	],
+	"categories": [
+		"AI",
+		"Chat"
+	],
+	"keywords": [
+		"copilot",
+		"copilot chat",
+		"language model",
+		"openai",
+		"anthropic",
+		"gemini",
+		"azure",
+		"byok",
+		"deepseek",
+		"groq",
+		"openrouter",
+		"together"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"enabledApiProposals": [],
+	"main": "./out/extension.js",
+	"contributes": {
+		"languageModelChatProviders": [
+			{
+				"vendor": "copilot-custom-provider",
+				"displayName": "Custom Providers",
+				"managementCommand": "copilot-custom-provider.openManager"
+			}
+		],
+		"commands": [
+			{
+				"command": "copilot-custom-provider.openManager",
+				"title": "%copilot-custom-provider.command.openManager%",
+				"category": "Copilot Custom Provider"
+			},
+			{
+				"command": "copilot-custom-provider.addProvider",
+				"title": "%copilot-custom-provider.command.addProvider%",
+				"category": "Copilot Custom Provider"
+			},
+			{
+				"command": "copilot-custom-provider.refreshAll",
+				"title": "%copilot-custom-provider.command.refreshAll%",
+				"category": "Copilot Custom Provider"
+			},
+			{
+				"command": "copilot-custom-provider.showLogs",
+				"title": "%copilot-custom-provider.command.showLogs%",
+				"category": "Copilot Custom Provider"
+			}
+		],
+		"walkthroughs": [
+			{
+				"id": "gettingStarted",
+				"title": "%copilot-custom-provider.walkthrough.title%",
+				"description": "%copilot-custom-provider.walkthrough.description%",
+				"steps": [
+					{
+						"id": "openManager",
+						"title": "%copilot-custom-provider.walkthrough.openManager.title%",
+						"description": "%copilot-custom-provider.walkthrough.openManager.description%",
+						"media": {
+							"markdown": "resources/walkthrough/open-manager.md"
+						},
+						"completionEvents": [
+							"onCommand:copilot-custom-provider.openManager"
+						]
+					},
+					{
+						"id": "addModels",
+						"title": "%copilot-custom-provider.walkthrough.addModels.title%",
+						"description": "%copilot-custom-provider.walkthrough.addModels.description%",
+						"media": {
+							"markdown": "resources/walkthrough/add-models.md"
+						}
+					}
+				]
+			}
+		],
+		"configuration": {
+			"title": "Copilot Custom Provider",
+			"properties": {
+				"copilot-custom-provider.syncProviders": {
+					"type": "boolean",
+					"default": false,
+					"description": "%copilot-custom-provider.config.syncProviders.description%"
+				},
+				"copilot-custom-provider.providersMirror": {
+					"type": "array",
+					"default": [],
+					"description": "%copilot-custom-provider.config.providersMirror.description%",
+					"items": {
+						"type": "object"
+					}
+				},
+				"copilot-custom-provider.apiKeys": {
+					"type": "object",
+					"default": {},
+					"description": "%copilot-custom-provider.config.apiKeys.description%",
+					"additionalProperties": {
+						"type": "string"
+					}
+				},
+				"copilot-custom-provider.visionModel": {
+					"type": "string",
+					"default": "",
+					"description": "%copilot-custom-provider.config.visionModel.description%"
+				},
+				"copilot-custom-provider.visionPrompt": {
+					"type": "string",
+					"editPresentation": "multilineText",
+					"default": "Describe the visual contents of this image in detail, including any text, objects, people, or context that would be relevant for understanding it. Focus on factual visual elements.",
+					"description": "%copilot-custom-provider.config.visionPrompt.description%"
+				},
+				"copilot-custom-provider.debug": {
+					"type": "boolean",
+					"default": false,
+					"description": "%copilot-custom-provider.config.debug.description%"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"clean": "node -e \"require('node:fs').rmSync('out',{recursive:true,force:true,maxRetries:process.platform==='win32'?10:0})\"",
+		"compile:ext": "tsc -p ./",
+		"compile:webview": "node esbuild.webview.mjs",
+		"compile": "pnpm run clean && pnpm run compile:ext && pnpm run compile:webview",
+		"watch:ext": "tsc -watch -p ./",
+		"watch:webview": "node esbuild.webview.mjs --watch",
+		"watch": "pnpm run clean && pnpm run \"/^watch:.*/\"",
+		"vscode:prepublish": "pnpm run compile",
+		"lint": "oxlint",
+		"format": "oxfmt --write src/",
+		"format:check": "oxfmt --check src/",
+		"package": "vsce package --no-dependencies --allow-missing-repository -o dist/"
+	},
+	"dependencies": {
+		"@vscode-elements/elements": "2.5.1",
+		"@vscode/codicons": "0.0.45",
+		"lit": "3.3.2"
+	},
+	"devDependencies": {
+		"@types/node": "25.6.0",
+		"@types/vscode": "1.116.0",
+		"@vscode/vsce": "3.9.1",
+		"esbuild": "0.28.0",
+		"oxfmt": "0.46.0",
+		"oxlint": "1.61.0",
+		"typescript": "6.0.3"
+	}
+}
