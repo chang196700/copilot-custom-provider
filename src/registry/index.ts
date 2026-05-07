@@ -29,6 +29,10 @@ export class ProviderRegistry {
 		this.adapter = new AggregateChatProvider(this.store);
 		try {
 			this.registration = vscode.lm.registerLanguageModelChatProvider(VENDOR_ID, this.adapter);
+			// Fire immediately so Copilot refreshes its model list after our extension activates
+			// (Copilot builds its list before onStartupFinished, so without this the models only
+			// appear after the user manually opens "Manage Language Models").
+			this.adapter.notifyChange();
 			logger.info(
 				`Registered LM provider vendor=${VENDOR_ID} with ${this.store.list().length} configured provider(s).`,
 			);
