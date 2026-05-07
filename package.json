@@ -100,15 +100,10 @@
 		"configuration": {
 			"title": "Copilot Custom Provider",
 			"properties": {
-				"copilot-custom-provider.syncProviders": {
-					"type": "boolean",
-					"default": false,
-					"description": "%copilot-custom-provider.config.syncProviders.description%"
-				},
-				"copilot-custom-provider.providersMirror": {
+				"copilot-custom-provider.providers": {
 					"type": "array",
 					"default": [],
-					"description": "%copilot-custom-provider.config.providersMirror.description%",
+					"description": "%copilot-custom-provider.config.providers.description%",
 					"items": {
 						"type": "object"
 					}
