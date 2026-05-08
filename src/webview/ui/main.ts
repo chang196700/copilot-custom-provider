@@ -282,6 +282,17 @@ export class CopilotCustomProviderApp extends LitElement {
 			opacity: 0.7;
 			user-select: text;
 			word-break: break-all;
+			flex: 1;
+			min-width: 0;
+		}
+		.provider-id-row {
+			display: flex;
+			gap: 8px;
+			align-items: center;
+		}
+		.provider-id-row vscode-textfield {
+			flex: 1;
+			min-width: 0;
 		}
 	`;
 
@@ -295,6 +306,12 @@ export class CopilotCustomProviderApp extends LitElement {
 	@state() private loadingModels = false;
 	@state() private strings: Record<string, string> = {};
 	@state() private draftIds: Set<string> = new Set();
+	/**
+	 * When set, the user has clicked "Change" on an existing provider's id and
+	 * this holds the original (persisted) id. Save will then dispatch a
+	 * `renameProvider` message before the normal upsert.
+	 */
+	@state() private renameOriginalId: string | undefined;
 
 	private t(key: string, ...args: unknown[]): string {
 		const tpl = this.strings[key] ?? key;
@@ -332,6 +349,15 @@ export class CopilotCustomProviderApp extends LitElement {
 					const remaining = new Set([...this.draftIds].filter((id) => !persistedIds.has(id)));
 					if (remaining.size !== this.draftIds.size) this.draftIds = remaining;
 				}
+				// If a rename round-trip completed (new id is now persisted), exit rename mode.
+				if (
+					this.renameOriginalId !== undefined &&
+					this.editing &&
+					m.providers.some((p) => p.id === this.editing!.id) &&
+					!m.providers.some((p) => p.id === this.renameOriginalId)
+				) {
+					this.renameOriginalId = undefined;
+				}
 				if (this.selectedId && !this.providers.find((p) => p.id === this.selectedId)) {
 					this.selectedId = undefined;
 					this.editing = undefined;
@@ -359,6 +385,7 @@ export class CopilotCustomProviderApp extends LitElement {
 	private selectProvider(id: string): void {
 		this.selectedId = id;
 		this.remoteModels = [];
+		this.renameOriginalId = undefined;
 		const p = this.providers.find((x) => x.id === id);
 		this.editing = p ? structuredClone(p) : undefined;
 		this.editingApiKey = '';
@@ -403,6 +430,18 @@ export class CopilotCustomProviderApp extends LitElement {
 
 	private save(): void {
 		if (!this.editing) return;
+		// If the user renamed an existing provider's id, dispatch the rename first
+		// so the host migrates the persisted record + secret atomically. The
+		// subsequent saveProvider then writes any other field changes under the
+		// new id.
+		if (
+			this.renameOriginalId !== undefined &&
+			this.renameOriginalId !== this.editing.id &&
+			!this.draftIds.has(this.editing.id)
+		) {
+			send({ type: 'renameProvider', oldId: this.renameOriginalId, newId: this.editing.id });
+		}
+		this.renameOriginalId = undefined;
 		send({ type: 'saveProvider', provider: this.editing, apiKey: this.editingApiKey || undefined });
 		this.editingApiKey = '';
 	}
@@ -419,6 +458,7 @@ export class CopilotCustomProviderApp extends LitElement {
 		this.draftIds = new Set([...this.draftIds].filter((did) => did !== id));
 		this.editing = undefined;
 		this.selectedId = undefined;
+		this.renameOriginalId = undefined;
 	}
 
 	private fetchRemoteModels(): void {
@@ -488,10 +528,35 @@ export class CopilotCustomProviderApp extends LitElement {
 		return !!(this.editing && this.draftIds.has(this.editing.id));
 	}
 
+	private get isRenamingId(): boolean {
+		return this.renameOriginalId !== undefined;
+	}
+
+	private startRenameId(): void {
+		if (!this.editing) return;
+		if (this.draftIds.has(this.editing.id)) return;
+		this.renameOriginalId = this.editing.id;
+	}
+
+	private cancelRenameId(): void {
+		if (!this.editing || this.renameOriginalId === undefined) return;
+		const original = this.renameOriginalId;
+		// Revert local state back to the original id so the sidebar & editing buffer match.
+		const currentId = this.editing.id;
+		if (currentId !== original) {
+			this.providers = this.providers.map((p) => (p.id === currentId ? { ...p, id: original } : p));
+			this.selectedId = original;
+			this.editing = { ...this.editing, id: original };
+		}
+		this.renameOriginalId = undefined;
+	}
+
 	private updateDraftId(newId: string): void {
 		if (!this.editing) return;
 		const oldId = this.editing.id;
-		this.draftIds = new Set([...this.draftIds].map((id) => (id === oldId ? newId : id)));
+		if (this.draftIds.has(oldId)) {
+			this.draftIds = new Set([...this.draftIds].map((id) => (id === oldId ? newId : id)));
+		}
 		this.providers = this.providers.map((p) => (p.id === oldId ? { ...p, id: newId } : p));
 		this.selectedId = newId;
 		this.editing = { ...this.editing, id: newId };
@@ -500,6 +565,7 @@ export class CopilotCustomProviderApp extends LitElement {
 	private get isDirty(): boolean {
 		if (!this.editing) return false;
 		if (this.editingApiKey.length > 0) return true;
+		if (this.renameOriginalId !== undefined && this.renameOriginalId !== this.editing.id) return true;
 		const saved = this.providers.find((p) => p.id === this.editing!.id);
 		if (!saved) return true; // unsaved new draft
 		return JSON.stringify(saved) !== JSON.stringify(this.editing);
@@ -577,12 +643,30 @@ export class CopilotCustomProviderApp extends LitElement {
 
 			<div class="field">
 				<label>${this.t('copilot-custom-provider.ui.providerId')}</label>
-				${this.isNewProvider
-					? html`<vscode-textfield
-							.value=${p.id}
-							@input=${(e: Event) => this.updateDraftId((e.target as HTMLInputElement).value)}
-						></vscode-textfield>`
-					: html`<div class="provider-id-readonly">${p.id}</div>`}
+				${this.isNewProvider || this.isRenamingId
+					? html`<div class="provider-id-row">
+							<vscode-textfield
+								.value=${live(p.id)}
+								@input=${(e: Event) => this.updateDraftId((e.target as HTMLInputElement).value)}
+							></vscode-textfield>
+							${this.isRenamingId
+								? html`<vscode-button
+										appearance="icon"
+										title=${this.t('copilot-custom-provider.ui.cancel') || 'Cancel'}
+										@click=${() => this.cancelRenameId()}
+									>
+										<vscode-icon name="close"></vscode-icon>
+									</vscode-button>`
+								: ''}
+						</div>`
+					: html`<div class="provider-id-row">
+							<div class="provider-id-readonly">${p.id}</div>
+							<vscode-button
+								appearance="secondary"
+								title=${this.t('copilot-custom-provider.ui.changeProviderIdTooltip')}
+								@click=${() => this.startRenameId()}
+							>${this.t('copilot-custom-provider.ui.changeProviderId')}</vscode-button>
+						</div>`}
 			</div>
 
 			<div class="field-row">

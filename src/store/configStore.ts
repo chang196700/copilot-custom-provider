@@ -121,4 +121,33 @@ export class ConfigStore {
 		}
 		this.emitter.fire({ type: 'delete', providerId: id });
 	}
+
+	/**
+	 * Change a provider's id. Migrates the stored API key so it remains accessible
+	 * under the new id. Fires a single 'reload' event rather than delete+add so
+	 * consumers see the rename as an atomic update.
+	 */
+	async rename(oldId: string, newId: string): Promise<void> {
+		const trimmed = newId.trim();
+		if (!trimmed) throw new Error('New provider id must not be empty');
+		if (trimmed === oldId) return;
+		const idx = this.cache.findIndex((p) => p.id === oldId);
+		if (idx === -1) throw new Error(`Provider ${oldId} not found`);
+		if (this.cache.some((p) => p.id === trimmed)) {
+			throw new Error(`Provider id ${trimmed} already exists`);
+		}
+		const existing = this.cache[idx];
+		const apiKey = await this.secrets.get(oldId, existing.keyStorage);
+		this.cache[idx] = { ...existing, id: trimmed };
+		await this.persistToSettings();
+		try {
+			if (apiKey !== undefined) {
+				await this.secrets.set(trimmed, existing.keyStorage, apiKey);
+			}
+			await this.secrets.delete(oldId, existing.keyStorage);
+		} catch (err) {
+			logger.warn(`Failed to migrate secret for ${oldId} → ${trimmed}`, err);
+		}
+		this.emitter.fire({ type: 'reload' });
+	}
 }

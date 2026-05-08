@@ -13,6 +13,7 @@ export type HostToWebviewMessage =
 export type WebviewToHostMessage =
 	| { type: 'ready' }
 	| { type: 'saveProvider'; provider: ProviderConfig; apiKey?: string }
+	| { type: 'renameProvider'; oldId: string; newId: string }
 	| { type: 'deleteProvider'; providerId: string }
 	| { type: 'fetchRemoteModels'; providerId: string }
 	| { type: 'showLogs' };

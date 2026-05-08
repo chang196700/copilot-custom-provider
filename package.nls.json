@@ -47,6 +47,8 @@
 	"copilot-custom-provider.ui.type": "Type",
 	"copilot-custom-provider.ui.name": "Name",
 	"copilot-custom-provider.ui.providerId": "Provider ID",
+	"copilot-custom-provider.ui.changeProviderId": "Change",
+	"copilot-custom-provider.ui.changeProviderIdTooltip": "Change provider id. Existing chat sessions bound to this provider will need to be re-selected.",
 	"copilot-custom-provider.ui.baseUrl": "Base URL",
 	"copilot-custom-provider.ui.description": "Description",
 	"copilot-custom-provider.ui.apiKey": "API Key (write-only)",

@@ -76,6 +76,10 @@ export class ProviderManagerPanel {
 					}
 					await this.post({ type: 'info', message: `Saved ${m.provider.name}` });
 					return;
+				case 'renameProvider':
+					await this.store.rename(m.oldId, m.newId);
+					await this.post({ type: 'info', message: `Renamed ${m.oldId} → ${m.newId}` });
+					return;
 				case 'deleteProvider':
 					await this.store.delete(m.providerId);
 					return;

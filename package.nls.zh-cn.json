@@ -47,6 +47,8 @@
 	"copilot-custom-provider.ui.type": "类型",
 	"copilot-custom-provider.ui.name": "名称",
 	"copilot-custom-provider.ui.providerId": "Provider ID",
+	"copilot-custom-provider.ui.changeProviderId": "修改",
+	"copilot-custom-provider.ui.changeProviderIdTooltip": "修改 Provider ID。已绑定到该 Provider 的会话需要重新选择模型。",
 	"copilot-custom-provider.ui.baseUrl": "Base URL",
 	"copilot-custom-provider.ui.description": "描述",
 	"copilot-custom-provider.ui.apiKey": "API Key（仅写入）",
