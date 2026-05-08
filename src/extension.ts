@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext): void {
 			}),
 			vscode.commands.registerCommand('copilot-custom-provider.refreshAll', () => {
 				registry.refresh();
-				vscode.window.showInformationMessage('Copilot Custom Provider: providers refreshed.');
+				vscode.window.showInformationMessage('LM Custom Provider: providers refreshed.');
 			}),
 			vscode.commands.registerCommand('copilot-custom-provider.showLogs', () => logger.show()),
 		);

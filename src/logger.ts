@@ -7,7 +7,7 @@ class Logger {
 
 	private get out(): vscode.OutputChannel {
 		if (!this.channel) {
-			this.channel = vscode.window.createOutputChannel('Copilot Custom Provider');
+			this.channel = vscode.window.createOutputChannel('LM Custom Provider');
 		}
 		return this.channel;
 	}

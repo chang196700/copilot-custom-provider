@@ -20,7 +20,7 @@ export class ProviderManagerPanel {
 		}
 		const panel = vscode.window.createWebviewPanel(
 			'copilot-custom-provider.providerManager',
-			'Copilot Custom Provider',
+			'LM Custom Provider',
 			vscode.ViewColumn.Active,
 			{
 				enableScripts: true,
@@ -131,7 +131,7 @@ export class ProviderManagerPanel {
 	<meta http-equiv="Content-Security-Policy"
 		content="default-src 'none'; img-src ${cspSource} data: https:; style-src ${cspSource} 'unsafe-inline'; font-src ${cspSource}; script-src 'nonce-${nonce}';" />
 	<link id="vscode-codicon-stylesheet" href="${codiconCssUri}" rel="stylesheet" nonce="${nonce}" />
-	<title>Copilot Custom Provider</title>
+	<title>LM Custom Provider</title>
 	<style>
 		html, body { padding: 0; margin: 0; height: 100%; }
 		body {

@@ -1,6 +1,6 @@
 {
 	"name": "copilot-custom-provider",
-	"displayName": "Copilot Custom Provider",
+	"displayName": "LM Custom Provider",
 	"description": "Add any OpenAI / Anthropic / Gemini / Azure compatible provider into the GitHub Copilot Chat model picker. Bring your own keys, models and providers.",
 	"version": "1.3.0",
 	"publisher": "chang196700",
@@ -51,22 +51,22 @@
 			{
 				"command": "copilot-custom-provider.openManager",
 				"title": "%copilot-custom-provider.command.openManager%",
-				"category": "Copilot Custom Provider"
+				"category": "LM Custom Provider"
 			},
 			{
 				"command": "copilot-custom-provider.addProvider",
 				"title": "%copilot-custom-provider.command.addProvider%",
-				"category": "Copilot Custom Provider"
+				"category": "LM Custom Provider"
 			},
 			{
 				"command": "copilot-custom-provider.refreshAll",
 				"title": "%copilot-custom-provider.command.refreshAll%",
-				"category": "Copilot Custom Provider"
+				"category": "LM Custom Provider"
 			},
 			{
 				"command": "copilot-custom-provider.showLogs",
 				"title": "%copilot-custom-provider.command.showLogs%",
-				"category": "Copilot Custom Provider"
+				"category": "LM Custom Provider"
 			}
 		],
 		"walkthroughs": [
@@ -98,7 +98,7 @@
 			}
 		],
 		"configuration": {
-			"title": "Copilot Custom Provider",
+			"title": "LM Custom Provider",
 			"properties": {
 				"copilot-custom-provider.providers": {
 					"type": "array",
