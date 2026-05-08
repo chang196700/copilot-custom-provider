@@ -40,15 +40,17 @@ const vscodeApi = acquireVsCodeApi();
  */
 function parseTokenCount(s: string): number {
 	const m = s.trim().match(/^(\d+(?:\.\d+)?)\s*(ki|mi|k|m)?$/i);
-	if (!m) return parseInt(s, 10) || 0;
+	if (!m) return 0;
 	const n = parseFloat(m[1]);
+	let result: number;
 	switch ((m[2] ?? '').toLowerCase()) {
-		case 'k': return Math.round(n * 1_000);
-		case 'm': return Math.round(n * 1_000_000);
-		case 'ki': return Math.round(n * 1_024);
-		case 'mi': return Math.round(n * 1_048_576);
-		default: return Math.round(n);
+		case 'k': result = Math.round(n * 1_000); break;
+		case 'm': result = Math.round(n * 1_000_000); break;
+		case 'ki': result = Math.round(n * 1_024); break;
+		case 'mi': result = Math.round(n * 1_048_576); break;
+		default: result = Math.round(n);
 	}
+	return Math.max(0, result);
 }
 
 /**

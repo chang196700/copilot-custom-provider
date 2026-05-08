@@ -67,7 +67,7 @@
 	"copilot-custom-provider.ui.displayNamePlaceholder": "Copilot 模型选择器中显示",
 	"copilot-custom-provider.ui.contextIn": "上下文（输入）",
 	"copilot-custom-provider.ui.output": "输出",
-	"copilot-custom-provider.ui.tokens": "tokens",
+	"copilot-custom-provider.ui.tokens": "如 128k、1M、128Ki、1Mi",
 	"copilot-custom-provider.ui.remove": "删除",
 	"copilot-custom-provider.ui.tools": "工具调用",
 	"copilot-custom-provider.ui.vision": "图像输入",

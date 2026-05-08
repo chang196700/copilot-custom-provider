@@ -67,7 +67,7 @@
 	"copilot-custom-provider.ui.displayNamePlaceholder": "shown in Copilot picker",
 	"copilot-custom-provider.ui.contextIn": "Context (in)",
 	"copilot-custom-provider.ui.output": "Output",
-	"copilot-custom-provider.ui.tokens": "tokens",
+	"copilot-custom-provider.ui.tokens": "e.g. 128k, 1M, 128Ki, 1Mi",
 	"copilot-custom-provider.ui.remove": "Remove",
 	"copilot-custom-provider.ui.tools": "Tools",
 	"copilot-custom-provider.ui.vision": "Vision",
