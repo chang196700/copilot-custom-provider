@@ -6,15 +6,14 @@
 		["@semantic-release/changelog", { "changelogFile": "CHANGELOG.md" }],
 		["@semantic-release/npm", { "npmPublish": false }],
 		["@semantic-release/exec", {
-			"prepareCmd": "mkdir -p dist && pnpm run package",
+			"prepareCmd": "mkdir -p dist && pnpm run package && git add CHANGELOG.md package.json && (git diff --cached --quiet || git commit -m \"chore(release): ${nextRelease.version} [skip ci]\")",
 			"publishCmd": "vsce publish --no-dependencies --packagePath dist/copilot-custom-provider-${nextRelease.version}.vsix"
+		}],
+		["@semantic-release/exec", {
+			"successCmd": "git push origin HEAD:${branch.name}"
 		}],
 		["@semantic-release/github", {
 			"assets": [{ "path": "dist/*.vsix", "label": "VS Code Extension (.vsix)" }]
-		}],
-		["@semantic-release/git", {
-			"assets": ["CHANGELOG.md", "package.json"],
-			"message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
 		}]
 	]
 }
