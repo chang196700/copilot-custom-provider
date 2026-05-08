@@ -14,7 +14,7 @@
 		"group:allNonMajor",
 		"group:linters",
 		"group:test",
-		"npm:unpublishSafe",
+		"security:minimumReleaseAgeNpm",
 		"helpers:disableTypesNodeMajor",
 		"workarounds:typesNodeVersioning"
 	],
