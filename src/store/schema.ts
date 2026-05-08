@@ -8,7 +8,7 @@ export function migrate(raw: unknown): ProviderConfigStoreShape {
 	}
 	const obj = raw as Partial<ProviderConfigStoreShape>;
 	const providers: ProviderConfig[] = Array.isArray(obj.providers)
-		? obj.providers.filter((p): p is ProviderConfig => isProvider(p))
+		? obj.providers.filter((p): p is ProviderConfig => isProvider(p)).map(normalizeProvider)
 		: [];
 	return {
 		schemaVersion: SCHEMA_VERSION,
@@ -27,4 +27,16 @@ function isProvider(p: unknown): p is ProviderConfig {
 		(o.keyStorage === 'secret' || o.keyStorage === 'settings') &&
 		Array.isArray(o.models)
 	);
+}
+
+/** Strip fields that were removed from the schema so they are not re-persisted. */
+function normalizeProvider(p: ProviderConfig): ProviderConfig {
+	return {
+		...p,
+		models: p.models.map((m) => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { family: _family, ...rest } = m as typeof m & { family?: unknown };
+			return rest as typeof m;
+		}),
+	};
 }

@@ -1,6 +1,6 @@
 import vscode from 'vscode';
 import { t } from '../i18n';
-import type { ModelDefinition, ProviderConfig } from '../types';
+import type { ModelDefinition, ProviderConfig, ProviderType } from '../types';
 
 type ThinkingEffortConfigurationSchema = ReturnType<typeof buildThinkingEffortSchema>;
 
@@ -28,7 +28,7 @@ export function toChatInfo(
 	return {
 		id: compositeId,
 		name: displayName,
-		family: m.family || providerLabel,
+		family: familyFromType(provider.type),
 		version: m.version,
 		detail: hasApiKey ? (m.detail ?? providerLabel) : t('copilot-custom-provider.errors.notConfigured'),
 		tooltip: hasApiKey ? (m.tooltip ?? displayName) : t('copilot-custom-provider.errors.notConfigured'),
@@ -69,4 +69,13 @@ function buildThinkingEffortSchema() {
 			},
 		},
 	} as const;
+}
+function familyFromType(type: ProviderType): string {
+	switch (type) {
+		case 'anthropic-compatible': return 'claude';
+		case 'gemini': return 'gemini';
+		case 'openai-compatible': return 'openai';
+		case 'azure-openai': return 'openai';
+		case 'bedrock': return 'bedrock';
+	}
 }

@@ -71,7 +71,6 @@ export const PRESETS: PresetTemplate[] = [
 			{
 				id: 'claude-3-5-sonnet-latest',
 				displayName: 'Claude 3.5 Sonnet',
-				family: 'claude',
 				version: '3.5',
 				maxInputTokens: 200000,
 				maxOutputTokens: 8192,
@@ -80,7 +79,6 @@ export const PRESETS: PresetTemplate[] = [
 			{
 				id: 'claude-3-5-haiku-latest',
 				displayName: 'Claude 3.5 Haiku',
-				family: 'claude',
 				version: '3.5',
 				maxInputTokens: 200000,
 				maxOutputTokens: 8192,
@@ -98,7 +96,6 @@ export const PRESETS: PresetTemplate[] = [
 			{
 				id: 'gemini-2.0-flash',
 				displayName: 'Gemini 2.0 Flash',
-				family: 'gemini',
 				version: '2.0',
 				maxInputTokens: 1048576,
 				maxOutputTokens: 8192,

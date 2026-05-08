@@ -74,7 +74,6 @@ export interface ModelDefinition {
 	id: string;
 	/** Display name shown in the picker. */
 	displayName: string;
-	family: string;
 	version: string;
 	maxInputTokens: number;
 	maxOutputTokens: number;

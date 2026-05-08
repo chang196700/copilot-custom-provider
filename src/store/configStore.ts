@@ -26,9 +26,13 @@ export class ConfigStore {
 		this.secrets = new SecretBackend(context.secrets);
 
 		// Primary store: settings.json (synced natively via VS Code Settings Sync).
-		const fromSettings = this.readFromSettings();
+		const { providers: fromSettings, dirty } = this.readFromSettingsWithDirtyFlag();
 		if (fromSettings.length > 0) {
 			this.cache = fromSettings;
+			if (dirty) {
+				void this.persistToSettings();
+				logger.info('Re-persisted providers to strip legacy fields from settings.json');
+			}
 		} else {
 			// One-time migration from legacy globalState storage.
 			const raw = context.globalState.get<unknown>(PROVIDERS_STATE_KEY);
@@ -63,6 +67,15 @@ export class ConfigStore {
 			.get<unknown[]>(PROVIDERS_SETTINGS_KEY, []);
 		const migrated = migrate({ schemaVersion: SCHEMA_VERSION, providers: Array.isArray(raw) ? raw : [] });
 		return migrated.providers;
+	}
+
+	private readFromSettingsWithDirtyFlag(): { providers: ProviderConfig[]; dirty: boolean } {
+		const raw = vscode.workspace
+			.getConfiguration(CONFIG_SECTION)
+			.get<unknown[]>(PROVIDERS_SETTINGS_KEY, []);
+		const migrated = migrate({ schemaVersion: SCHEMA_VERSION, providers: Array.isArray(raw) ? raw : [] });
+		const dirty = JSON.stringify(raw) !== JSON.stringify(migrated.providers);
+		return { providers: migrated.providers, dirty };
 	}
 
 	private async persistToSettings(): Promise<void> {

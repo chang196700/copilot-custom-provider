@@ -432,7 +432,6 @@ export class CopilotCustomProviderApp extends LitElement {
 		const def: ModelDefinition = {
 			id: remote.id,
 			displayName: remote.displayName ?? remote.id,
-			family: this.editing.type.split('-')[0] || 'custom',
 			version: '1',
 			maxInputTokens: remote.contextWindow ?? 128000,
 			maxOutputTokens: 4096,
@@ -446,7 +445,6 @@ export class CopilotCustomProviderApp extends LitElement {
 		const def: ModelDefinition = {
 			id: 'new-model',
 			displayName: 'New Model',
-			family: this.editing.type.split('-')[0] || 'custom',
 			version: '1',
 			maxInputTokens: 128000,
 			maxOutputTokens: 4096,
