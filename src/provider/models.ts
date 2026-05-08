@@ -24,7 +24,7 @@ export function toChatInfo(
 	compositeId: string,
 ): ModelPickerChatInformation {
 	const providerLabel = provider.name || provider.id;
-	const displayName = `${providerLabel}: ${m.displayName || m.name}`;
+	const displayName = `${providerLabel}: ${m.displayName || m.id}`;
 	return {
 		id: compositeId,
 		name: displayName,
