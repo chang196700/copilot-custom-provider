@@ -1,4 +1,4 @@
-# Copilot Custom Provider
+# LM Custom Provider
 
 Add **any** OpenAI / Anthropic / Gemini / Azure OpenAI compatible provider straight into the
 GitHub Copilot Chat model picker. Bring your own keys, your own models, your own providers —
@@ -33,7 +33,7 @@ all behind a single, native-looking management panel.
 ## Quick start
 
 1. Install the extension.
-2. Run **Copilot Custom Provider: Open Provider Manager** from the command palette.
+2. Run **LM Custom Provider: Open Provider Manager** from the command palette.
 3. Click **+**, pick a preset (e.g. `DeepSeek` or `Anthropic`) or use `Custom` for manual configuration, enter your API key, save.
 4. Click **Fetch From Remote** (OpenAI-compatible providers) to import models — or click
    **Add Manually** for everything else.
