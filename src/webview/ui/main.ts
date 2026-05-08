@@ -16,6 +16,7 @@ import type {
 	WebviewToHostMessage,
 } from '../messages';
 import type {
+	AuthMode,
 	ModelDefinition,
 	PresetTemplate,
 	ProviderCapabilityFlags,
@@ -399,7 +400,6 @@ export class CopilotCustomProviderApp extends LitElement {
 		if (this.editing.models.some((m) => m.id === remote.id)) return;
 		const def: ModelDefinition = {
 			id: remote.id,
-			name: remote.id,
 			displayName: remote.displayName ?? remote.id,
 			family: this.editing.type.split('-')[0] || 'custom',
 			version: '1',
@@ -414,7 +414,6 @@ export class CopilotCustomProviderApp extends LitElement {
 		if (!this.editing) return;
 		const def: ModelDefinition = {
 			id: 'new-model',
-			name: 'new-model',
 			displayName: 'New Model',
 			family: this.editing.type.split('-')[0] || 'custom',
 			version: '1',
@@ -644,6 +643,29 @@ export class CopilotCustomProviderApp extends LitElement {
 					</vscode-single-select>
 				</div>
 			</div>
+
+			${p.type === 'anthropic-compatible'
+				? html`
+					<div class="field">
+						<label>${this.t('copilot-custom-provider.ui.authMode')}</label>
+						<vscode-single-select
+							.value=${p.authMode ?? 'apiKey'}
+							@change=${(e: Event) =>
+								this.updateField(
+									'authMode',
+									(e.target as HTMLSelectElement).value as AuthMode,
+								)}
+						>
+							<vscode-option value="apiKey" ?selected=${(p.authMode ?? 'apiKey') === 'apiKey'}>
+								${this.t('copilot-custom-provider.ui.authMode.apiKey')}
+							</vscode-option>
+							<vscode-option value="bearer" ?selected=${p.authMode === 'bearer'}>
+								${this.t('copilot-custom-provider.ui.authMode.bearer')}
+							</vscode-option>
+						</vscode-single-select>
+					</div>
+				`
+				: ''}
 
 			<vscode-divider></vscode-divider>
 
