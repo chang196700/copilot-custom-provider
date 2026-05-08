@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/chang196700/copilot-custom-provider/compare/v1.4.0...v1.5.0) (2026-05-08)
+
+
+### Features
+
+* add status bar item for quick access to provider manager ([c2db12c](https://github.com/chang196700/copilot-custom-provider/commit/c2db12cfbba80c7b0e8bd74e973746ea709f7c17))
+
 # [1.4.0](https://github.com/chang196700/copilot-custom-provider/compare/v1.3.0...v1.4.0) (2026-05-08)
 
 
