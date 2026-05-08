@@ -1,3 +1,12 @@
+# [1.1.0](https://github.com/chang196700/copilot-custom-provider/compare/v1.0.0...v1.1.0) (2026-05-08)
+
+
+### Features
+
+* **anthropic:** support auth mode and claude-code impersonation ([a3cec46](https://github.com/chang196700/copilot-custom-provider/commit/a3cec46868efc3bdb0c1a045e38f8d7eed6cc0b5))
+* **config:** replace syncProviders/providersMirror with providers setting ([f4fef85](https://github.com/chang196700/copilot-custom-provider/commit/f4fef8515ae0f0bf6787ab5e897e7f94e8f22e67))
+* **presets:** add blank custom preset and make type/baseUrl optional ([62db8d6](https://github.com/chang196700/copilot-custom-provider/commit/62db8d6947ad70ec54f986c9cd62b1ed7424c23e))
+
 # 1.0.0 (2026-05-07)
 
 
