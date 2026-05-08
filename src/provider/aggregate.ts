@@ -158,7 +158,7 @@ export class AggregateChatProvider implements vscode.LanguageModelChatProvider {
 		modelDef: ModelDefinition;
 		normalised: NormalizedMessage[];
 		tools: ReturnType<typeof convertTools>;
-		thinkingEffort: 'none' | 'high' | 'max';
+		thinkingEffort: 'none' | 'adaptive' | 'low' | 'medium' | 'high' | 'max';
 		trailingToolResultIds: string[];
 		totalRequestChars: number;
 		progress: vscode.Progress<vscode.LanguageModelResponsePart>;

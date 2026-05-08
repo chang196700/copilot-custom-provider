@@ -15,7 +15,7 @@ export type ModelConfigurationOptions = vscode.ProvideLanguageModelChatResponseO
 	readonly configuration?: Record<string, unknown>;
 };
 
-export type ThinkingEffort = 'none' | 'high' | 'max';
+export type ThinkingEffort = 'none' | 'adaptive' | 'low' | 'medium' | 'high' | 'max';
 
 export function toChatInfo(
 	m: ModelDefinition,
@@ -47,6 +47,9 @@ export function toChatInfo(
 export function getConfiguredThinkingEffort(options: ModelConfigurationOptions): ThinkingEffort {
 	const v = options.modelConfiguration?.reasoningEffort ?? options.configuration?.reasoningEffort;
 	if (v === 'none') return 'none';
+	if (v === 'adaptive') return 'adaptive';
+	if (v === 'low') return 'low';
+	if (v === 'medium') return 'medium';
 	if (v === 'max') return 'max';
 	return 'high';
 }
@@ -57,10 +60,20 @@ function buildThinkingEffortSchema() {
 			reasoningEffort: {
 				type: 'string',
 				title: t('copilot-custom-provider.thinking.title'),
-				enum: ['none', 'high', 'max'],
-				enumItemLabels: [t('copilot-custom-provider.thinking.none'), t('copilot-custom-provider.thinking.high'), t('copilot-custom-provider.thinking.max')],
+				enum: ['none', 'adaptive', 'low', 'medium', 'high', 'max'],
+				enumItemLabels: [
+					t('copilot-custom-provider.thinking.none'),
+					t('copilot-custom-provider.thinking.adaptive'),
+					t('copilot-custom-provider.thinking.low'),
+					t('copilot-custom-provider.thinking.medium'),
+					t('copilot-custom-provider.thinking.high'),
+					t('copilot-custom-provider.thinking.max'),
+				],
 				enumDescriptions: [
 					t('copilot-custom-provider.thinking.none.desc'),
+					t('copilot-custom-provider.thinking.adaptive.desc'),
+					t('copilot-custom-provider.thinking.low.desc'),
+					t('copilot-custom-provider.thinking.medium.desc'),
 					t('copilot-custom-provider.thinking.high.desc'),
 					t('copilot-custom-provider.thinking.max.desc'),
 				],

@@ -129,7 +129,7 @@ export interface PresetTemplate {
 	apiKeyHint?: string;
 }
 
-export type ThinkingEffort = 'none' | 'high' | 'max';
+export type ThinkingEffort = 'none' | 'adaptive' | 'low' | 'medium' | 'high' | 'max';
 
 /** Stream callbacks shared across protocol drivers. */
 export interface DeltaToolCall {

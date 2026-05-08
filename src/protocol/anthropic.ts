@@ -452,8 +452,12 @@ export class AnthropicDriver implements ProtocolDriver {
 				}));
 			}
 			if (payload.model.capabilities.thinking && payload.thinkingEffort !== 'none') {
-				const budget = payload.thinkingEffort === 'max' ? 16000 : 4000;
-				body.thinking = { type: 'enabled', budget_tokens: budget };
+				if (payload.thinkingEffort === 'adaptive') {
+					body.thinking = { type: 'adaptive' };
+				} else {
+					const budget = mapAnthropicThinkingBudget(payload.thinkingEffort);
+					body.thinking = { type: 'enabled', budget_tokens: budget };
+				}
 			}
 		}
 		return body;
@@ -483,5 +487,14 @@ export class AnthropicDriver implements ProtocolDriver {
 				displayName: m.display_name ?? m.displayName ?? m.name,
 				contextWindow: m.context_window ?? m.contextWindow ?? m.context_length,
 			}));
+	}
+}
+
+function mapAnthropicThinkingBudget(effort: 'low' | 'medium' | 'high' | 'max'): number {
+	switch (effort) {
+		case 'low': return 1024;
+		case 'medium': return 4000;
+		case 'high': return 8000;
+		case 'max': return 16000;
 	}
 }

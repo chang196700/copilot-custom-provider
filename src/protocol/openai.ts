@@ -83,10 +83,12 @@ export class OpenAIDriver implements ProtocolDriver {
 			body.max_tokens = payload.maxOutputTokens;
 		}
 		if (payload.model.capabilities.thinking) {
-			body.reasoning_effort = mapThinkingEffort(payload.thinkingEffort);
-			body.thinking = {
-				type: payload.thinkingEffort === 'none' ? 'disabled' : 'enabled',
-			};
+			if (payload.thinkingEffort === 'none') {
+				body.thinking = { type: 'disabled' };
+			} else {
+				body.reasoning_effort = mapThinkingEffort(payload.thinkingEffort);
+				body.thinking = { type: 'enabled' };
+			}
 		}
 		return body;
 	}
@@ -199,13 +201,15 @@ export class OpenAIDriver implements ProtocolDriver {
 	}
 }
 
-function mapThinkingEffort(effort: ThinkingEffort): string {
+function mapThinkingEffort(effort: Exclude<ThinkingEffort, 'none'>): string {
 	switch (effort) {
-		case 'none':
+		case 'low':
 			return 'low';
+		case 'adaptive':
+		case 'medium':
+			return 'medium';
+		case 'high':
 		case 'max':
 			return 'high';
-		default:
-			return 'medium';
 	}
 }
