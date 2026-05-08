@@ -13,7 +13,19 @@ export function activate(context: vscode.ExtensionContext): void {
 		const registry = new ProviderRegistry(context, store);
 		registry.bootstrap();
 
+		const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+		statusBar.command = 'copilot-custom-provider.openManager';
+		const updateStatusBar = () => {
+			const count = store.list().length;
+			statusBar.text = `$(plug) ${count}`;
+			statusBar.tooltip = `LM Custom Provider — ${count} provider(s) · Click to open manager`;
+		};
+		updateStatusBar();
+		statusBar.show();
+
 		context.subscriptions.push(
+			statusBar,
+			store.onDidChange(updateStatusBar),
 			vscode.commands.registerCommand('copilot-custom-provider.openManager', () => {
 				ProviderManagerPanel.show(context, store);
 			}),
