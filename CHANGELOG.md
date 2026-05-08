@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/chang196700/copilot-custom-provider/compare/v1.3.0...v1.4.0) (2026-05-08)
+
+
+### Features
+
+* expand ThinkingEffort to none/adaptive/low/medium/high/max ([1a6102e](https://github.com/chang196700/copilot-custom-provider/commit/1a6102e12ce4956dcaebec1442f1e00e26403d77))
+
 # [1.3.0](https://github.com/chang196700/copilot-custom-provider/compare/v1.2.0...v1.3.0) (2026-05-08)
 
 
