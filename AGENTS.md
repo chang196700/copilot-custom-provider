@@ -40,7 +40,7 @@ Run the extension via the VS Code `Run and Debug` panel using one of the
 
 ## Code layout
 
-- `src/extension.ts` — activation, command registration, store + registry wiring
+- `src/extension.ts` — activation, command registration, store + registry wiring, status bar item (shows live provider count; updates via `store.onDidChange`)
 - `src/registry/index.ts` — single static `vscode.lm.registerLanguageModelChatProvider`
   call. Vendor id is the static string `copilot-custom-provider`. Per-provider model ids are composite:
   `<providerId>::<modelId>`. **Do not register multiple vendors.**
@@ -77,6 +77,8 @@ into `out/webview/main.js` (~127 KB) and uses its own
 `useDefineForClassFields: false` (Lit requires legacy decorators). The build also copies
 `@vscode/codicons` CSS + TTF into `out/webview/codicons/`.
 
+**oxlint** does not lint `src/webview/ui/**` (Lit legacy decorators make it incompatible). Run `pnpm run lint` freely — it only covers extension host code.
+
 `vscode.proposed.languageModelThinkingPart.d.ts` is an ambient module augmentation that
 declares `vscode.LanguageModelThinkingPart` for type-checking only — `enabledApiProposals`
 in `package.json` is intentionally empty. Cast to `LanguageModelResponsePart` at the call
@@ -103,11 +105,38 @@ site. Don't move this file under `src/`; `tsconfig.json` picks it up from the re
   API keys are stored separately in `copilot-custom-provider.apiKeys` (or SecretStorage).
   VS Code Settings Sync automatically syncs the providers (without keys) across devices.
 
+## ThinkingEffort
+
+`ThinkingEffort = 'none' | 'adaptive' | 'low' | 'medium' | 'high' | 'max'`
+
+The type is declared in **two places that must be kept in sync**:
+- `src/types.ts` — used by protocol drivers via `ChatRequestPayload`
+- `src/provider/models.ts` — local alias + `buildThinkingEffortSchema()` enum
+
+When adding a new level, update both declarations, `getConfiguredThinkingEffort()`,
+`buildThinkingEffortSchema()`, `mapThinkingEffort()` in `openai.ts`, and
+`mapAnthropicThinkingBudget()` in `anthropic.ts`.
+
+Protocol mapping:
+- **Anthropic**: `adaptive` → `{type:'adaptive'}`; others → `{type:'enabled', budget_tokens: N}` where `low=1024 / medium=4000 / high=8000 / max=16000`. `none` skips the `thinking` block entirely.
+- **OpenAI-compatible**: `none` → only `thinking:{type:'disabled'}`, no `reasoning_effort`. Others → `reasoning_effort: low|medium|high` (`low`→`low`, `adaptive`/`medium`→`medium`, `high`/`max`→`high`).
+
+## Branding
+
+The extension's **displayName is "LM Custom Provider"** (renamed from "Copilot Custom Provider" to avoid trademark conflict). Internal identifiers (`copilot-custom-provider` command prefix, vendor id, settings keys) are preserved for backward compatibility and cannot be changed without breaking existing user configurations.
+
 ## Localization
 
 Both `package.nls.json` (en) and `package.nls.zh-cn.json` must stay in sync. UI literals
 in `src/webview/ui/main.ts` go through `this.t('copilot-custom-provider.ui.<key>')`. Placeholders use
 `{0}`, `{1}` syntax matching `src/i18n.ts`.
+
+## Known gaps
+
+See [TODO.md](TODO.md) for the authoritative backlog. Key stubs agents must not silently fix or work around:
+- **Bedrock** — `protocol/bedrock.ts` throws immediately; SigV4 not implemented.
+- **Vision proxy** — images are dropped; `vision/` subtree does not exist yet.
+- **Diagnostics** — `provider/diagnostics.ts` does not exist yet.
 
 ## Git / release
 
