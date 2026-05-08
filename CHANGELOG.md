@@ -1,3 +1,15 @@
+# [1.3.0](https://github.com/chang196700/copilot-custom-provider/compare/v1.2.0...v1.3.0) (2026-05-08)
+
+
+### Bug Fixes
+
+* **ci:** remove persist-credentials:false so git push uses GITHUB_TOKEN ([f0f120e](https://github.com/chang196700/copilot-custom-provider/commit/f0f120e9405631b0ba5ea0ef4ccb1b6894b3dd07))
+
+
+### Features
+
+* **ui:** add Change button to edit Provider ID in-place ([6cd02d5](https://github.com/chang196700/copilot-custom-provider/commit/6cd02d575d76580d2957d6e4b24f71107dacbe8e))
+
 # [1.1.0](https://github.com/chang196700/copilot-custom-provider/compare/v1.0.0...v1.1.0) (2026-05-08)
 
 
