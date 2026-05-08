@@ -1,6 +1,7 @@
 import { LitElement, html, css, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
+import { live } from 'lit/directives/live.js';
 import '@vscode-elements/elements/dist/vscode-button';
 import '@vscode-elements/elements/dist/vscode-textfield';
 import '@vscode-elements/elements/dist/vscode-textarea';
@@ -32,6 +33,36 @@ interface VsCodeApi {
 }
 declare const acquireVsCodeApi: () => VsCodeApi;
 const vscodeApi = acquireVsCodeApi();
+
+/**
+ * Parse a token count string that may contain SI or IEC suffixes.
+ * k/K = ×1 000, M/m = ×1 000 000, Ki/ki = ×1 024, Mi/mi = ×1 048 576.
+ */
+function parseTokenCount(s: string): number {
+	const m = s.trim().match(/^(\d+(?:\.\d+)?)\s*(ki|mi|k|m)?$/i);
+	if (!m) return parseInt(s, 10) || 0;
+	const n = parseFloat(m[1]);
+	switch ((m[2] ?? '').toLowerCase()) {
+		case 'k': return Math.round(n * 1_000);
+		case 'm': return Math.round(n * 1_000_000);
+		case 'ki': return Math.round(n * 1_024);
+		case 'mi': return Math.round(n * 1_048_576);
+		default: return Math.round(n);
+	}
+}
+
+/**
+ * Format a token count number back to the most compact human-readable string.
+ * Prefers SI units (k, M) over IEC units (Ki, Mi).
+ */
+function formatTokenCount(n: number): string {
+	if (!n) return '';
+	if (n % 1_000_000 === 0) return `${n / 1_000_000}M`;
+	if (n % 1_000 === 0) return `${n / 1_000}k`;
+	if (n % 1_048_576 === 0) return `${n / 1_048_576}Mi`;
+	if (n % 1_024 === 0) return `${n / 1_024}Ki`;
+	return String(n);
+}
 
 function send(msg: WebviewToHostMessage): void {
 	vscodeApi.postMessage(msg);
@@ -725,24 +756,22 @@ export class CopilotCustomProviderApp extends LitElement {
 				<div class="field">
 					<label>${this.t('copilot-custom-provider.ui.contextIn')}</label>
 					<vscode-textfield
-						type="number"
-						.value=${String(m.maxInputTokens)}
+						.value=${live(formatTokenCount(m.maxInputTokens))}
 						placeholder=${this.t('copilot-custom-provider.ui.tokens')}
 						@input=${(e: Event) =>
 							this.updateModel(idx, {
-								maxInputTokens: Number((e.target as HTMLInputElement).value) || 0,
+								maxInputTokens: parseTokenCount((e.target as HTMLInputElement).value),
 							})}
 					></vscode-textfield>
 				</div>
 				<div class="field">
 					<label>${this.t('copilot-custom-provider.ui.output')}</label>
 					<vscode-textfield
-						type="number"
-						.value=${String(m.maxOutputTokens)}
+						.value=${live(formatTokenCount(m.maxOutputTokens))}
 						placeholder=${this.t('copilot-custom-provider.ui.tokens')}
 						@input=${(e: Event) =>
 							this.updateModel(idx, {
-								maxOutputTokens: Number((e.target as HTMLInputElement).value) || 0,
+								maxOutputTokens: parseTokenCount((e.target as HTMLInputElement).value),
 							})}
 					></vscode-textfield>
 				</div>
