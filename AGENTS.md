@@ -12,7 +12,7 @@ edit and remove providers and their models.
 ## Toolchain (pinned, do not float)
 
 - Node: `24.15.0` (managed by `fnm`, see `.node-version`)
-- pnpm: `10.33.2` (declared via `packageManager` field, enabled with `corepack`)
+- pnpm: `11.0.5` (declared via `packageManager` field, enabled with `corepack`)
 - TypeScript: `6.0.3`
 - esbuild: `0.28.0` — bundles the webview only
 - Lit: `3.3.2`, `@vscode-elements/elements`: `2.5.1`, `@vscode/codicons`: `0.0.45`
