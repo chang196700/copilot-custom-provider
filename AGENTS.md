@@ -54,10 +54,8 @@ Run the extension via the VS Code `Run and Debug` panel using one of the
 - `src/protocol/*` — protocol drivers (`openai`, `anthropic`, `gemini`, `azure`,
   `bedrock` stub). Each implements `Driver` from `protocol/driver.ts`.
   `protocol/sse.ts` is the shared SSE line-reader.
-- `src/store/configStore.ts` — provider configs in `globalState`, with `EventEmitter`
+- `src/store/configStore.ts` — provider configs in `settings.json` (synced via VS Code Settings Sync), with `EventEmitter`. Migrates from legacy `globalState` on first run.
 - `src/store/schema.ts` — `SCHEMA_VERSION = 1`; bump + migrate when persisted shape changes
-- `src/store/sync.ts` — `SyncMirror` writes a key-less mirror to `copilot-custom-provider.providersMirror`
-  when `copilot-custom-provider.syncProviders` is on. External edits to that key trigger a reload.
 - `src/store/secrets.ts` — API key storage. Two backends per provider:
   `secret` (SecretStorage, recommended) or `settings` (single dict
   `copilot-custom-provider.apiKeys: { [providerId]: string }` so it can sync). **Never declare per-provider
@@ -101,6 +99,9 @@ site. Don't move this file under `src/`; `tsconfig.json` picks it up from the re
 - Unsaved provider drafts only live in webview state. The Delete button must remove from
   the local `providers` array AND only post `deleteProvider` to the host when the id was
   actually persisted.
+- Provider configs are stored directly in `settings.json` under `copilot-custom-provider.providers`.
+  API keys are stored separately in `copilot-custom-provider.apiKeys` (or SecretStorage).
+  VS Code Settings Sync automatically syncs the providers (without keys) across devices.
 
 ## Localization
 

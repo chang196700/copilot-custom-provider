@@ -15,14 +15,18 @@ all behind a single, native-looking management panel.
 - **Native UI** — a Lit + `@vscode-elements/elements` webview that matches the VS Code theme.
 - **Two ways to add models** — fetch the live `/models` list and click `+`, or enter the
   metadata manually for providers without a discovery endpoint.
+- **Flexible presets** — choose from built-in presets (DeepSeek, Anthropic, Gemini, etc.) or
+  use the blank custom preset to configure any provider manually. Type and base URL are optional
+  for custom configurations.
 - **Per-model capability flags** — `tools`, `vision`, and `thinking` toggles surface the
   matching VS Code Chat capabilities (including the per-model thinking-effort dropdown).
 - **Hot reload** — editing a provider takes effect on the **next** chat turn; in-flight
   streaming responses keep their original config snapshot and finish naturally.
-- **Optional Settings Sync** — toggle `copilot-custom-provider.syncProviders` to mirror provider definitions
-  (without API keys) into `settings.json` so they roam across devices via VS Code Settings Sync.
+- **Settings Sync** — provider definitions (without API keys) are stored in `settings.json` and
+  automatically synced across devices via VS Code Settings Sync.
 - **Per-provider key storage** — choose `SecretStorage` (default, never leaves the device) or
   `Settings` (sync-able but visible to everyone with read access to your config).
+- **Anthropic auth modes** — support for different authentication methods for Anthropic-compatible providers.
 - **Reasoning cache** — for thinking-capable models, the same multi-turn `reasoning_content`
   re-injection logic generalised across providers.
 
@@ -30,7 +34,7 @@ all behind a single, native-looking management panel.
 
 1. Install the extension.
 2. Run **Copilot Custom Provider: Open Provider Manager** from the command palette.
-3. Click **+**, pick a preset (e.g. `DeepSeek` or `Anthropic`), enter your API key, save.
+3. Click **+**, pick a preset (e.g. `DeepSeek` or `Anthropic`) or use `Custom` for manual configuration, enter your API key, save.
 4. Click **Fetch From Remote** (OpenAI-compatible providers) to import models — or click
    **Add Manually** for everything else.
 5. Open Copilot Chat → model picker → your provider's models appear under their own vendor.
@@ -39,8 +43,8 @@ all behind a single, native-looking management panel.
 
 | Setting               | Description                                                            |
 | --------------------- | ---------------------------------------------------------------------- |
-| `copilot-custom-provider.syncProviders`   | Mirror providers (no keys) into settings.json for Settings Sync.       |
-| `copilot-custom-provider.providersMirror` | Mirror payload — managed by `copilot-custom-provider.syncProviders`, do not edit by hand.  |
+| `copilot-custom-provider.providers`   | Array of provider configurations. Synced via VS Code Settings Sync (excluding API keys).       |
+| `copilot-custom-provider.apiKeys`     | Object mapping provider IDs to API keys. Use SecretStorage backend for better security.  |
 | `copilot-custom-provider.visionModel`     | Model id used by the vision proxy (when forwarding images).            |
 | `copilot-custom-provider.visionPrompt`    | Prompt sent to the vision proxy when describing images.                |
 | `copilot-custom-provider.debug`           | Enable verbose diagnostic logging in the output channel.               |
@@ -60,7 +64,7 @@ Press <kbd>F5</kbd> to launch the Extension Development Host.
 
 ```
 extension.ts
- ├─ ConfigStore (globalState + SecretStorage + optional Settings-Sync mirror)
+ ├─ ConfigStore (settings.json + SecretStorage + VS Code Settings Sync)
  ├─ ProviderRegistry → AggregateChatProvider → vscode.lm.registerLanguageModelChatProvider (vendor: ccp)
  │   ├─ per-provider model ids: <providerId>::<modelId>
  │   └─ ProtocolDriver (OpenAI / Anthropic / Gemini / Azure / Bedrock)
