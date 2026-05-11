@@ -3,6 +3,7 @@ import { logger } from '../logger';
 import { safeStringify } from '../json';
 import type { AuthMode, ClaudeCodeImpersonation, ProviderConfig, StreamCallbacks } from '../types';
 import type { ChatRequestPayload, ProtocolDriver, RemoteModelDescriptor } from './driver';
+import { sanitizeJsonSchema } from './driver';
 import { readSse, throwHttpError } from './sse';
 
 /**
@@ -408,7 +409,7 @@ export class AnthropicDriver implements ProtocolDriver {
 			// the presence and names of these tools. Inject stubs when caller has no
 			// tools (unless explicitly disabled via injectTools: false).
 			const callerTools = payload.tools && payload.tools.length > 0
-				? payload.tools.map((t) => ({ name: t.name, description: t.description, input_schema: t.parameters ?? { type: 'object', properties: {} } }))
+				? payload.tools.map((t) => ({ name: t.name, description: t.description, input_schema: (t.parameters ? sanitizeJsonSchema(t.parameters) : { type: 'object', properties: {} }) as Record<string, unknown> }))
 				: null;
 			if (impersonation.injectTools !== false) {
 				body.tools = callerTools ?? [...CLAUDE_CODE_TOOL_STUBS];
@@ -448,7 +449,7 @@ export class AnthropicDriver implements ProtocolDriver {
 				body.tools = payload.tools.map((t) => ({
 					name: t.name,
 					description: t.description,
-					input_schema: t.parameters ?? { type: 'object', properties: {} },
+					input_schema: (t.parameters ? sanitizeJsonSchema(t.parameters) : { type: 'object', properties: {} }) as Record<string, unknown>,
 				}));
 			}
 			if (payload.model.capabilities.thinking && payload.thinkingEffort !== 'none') {

@@ -41,3 +41,31 @@ export interface ProtocolDriver {
 	): Promise<void>;
 	listRemoteModels?(provider: ProviderConfig, apiKey: string): Promise<RemoteModelDescriptor[]>;
 }
+
+/**
+ * Non-standard JSON Schema keys injected by VS Code or draft-only annotations
+ * that strict APIs (Gemini, some OpenAI-compatible backends) reject.
+ */
+const NON_STANDARD_SCHEMA_KEYS = new Set([
+	'$comment',
+	'enumDescriptions',
+	'markdownDescription',
+	'deprecationMessage',
+	'errorMessage',
+]);
+
+/**
+ * Recursively strip non-standard JSON Schema fields from a tool parameter
+ * schema before sending it to any remote API.
+ */
+export function sanitizeJsonSchema(schema: unknown): unknown {
+	if (Array.isArray(schema)) return schema.map(sanitizeJsonSchema);
+	if (schema !== null && typeof schema === 'object') {
+		const result: Record<string, unknown> = {};
+		for (const [k, v] of Object.entries(schema as Record<string, unknown>)) {
+			if (!NON_STANDARD_SCHEMA_KEYS.has(k)) result[k] = sanitizeJsonSchema(v);
+		}
+		return result;
+	}
+	return schema;
+}

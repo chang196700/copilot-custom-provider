@@ -8,6 +8,7 @@ import type {
 	ProtocolDriver,
 	RemoteModelDescriptor,
 } from './driver';
+import { sanitizeJsonSchema } from './driver';
 import { readSse, throwHttpError } from './sse';
 
 interface OpenAIToolCallDelta {
@@ -74,7 +75,7 @@ export class OpenAIDriver implements ProtocolDriver {
 				function: {
 					name: tool.name,
 					description: tool.description,
-					parameters: tool.parameters,
+					parameters: tool.parameters ? sanitizeJsonSchema(tool.parameters) : undefined,
 				},
 			}));
 			body.tool_choice = 'auto';

@@ -3,6 +3,7 @@ import { logger } from '../logger';
 import { safeStringify } from '../json';
 import type { ProviderConfig, StreamCallbacks } from '../types';
 import type { ChatRequestPayload, NormalizedMessage, ProtocolDriver } from './driver';
+import { sanitizeJsonSchema } from './driver';
 import { readSse, throwHttpError } from './sse';
 
 interface GeminiPart {
@@ -131,7 +132,7 @@ export class GeminiDriver implements ProtocolDriver {
 					functionDeclarations: payload.tools.map((t) => ({
 						name: t.name,
 						description: t.description,
-						parameters: t.parameters,
+						parameters: t.parameters ? sanitizeJsonSchema(t.parameters) : undefined,
 					})),
 				},
 			];
