@@ -47,8 +47,8 @@
 
 - [ ] Unit tests via `vitest` for `convertMessages`, `readSse`, driver `buildBody`/`buildHeaders`
 - [ ] Integration test using `@vscode/test-electron` for command activation
-- [ ] CI: lint + typecheck + package on push (matrix: Windows / macOS / Linux)
-- [ ] Schema-validate `copilot-custom-provider.providersMirror` array items on read (defensive against hand-edits)
+- [ ] CI matrix: extend `build.yml` to Windows / macOS / Linux (currently Linux-only)
+- [ ] Schema-validate `copilot-custom-provider.providers` array items on read (defensive against hand-edits)
 - [ ] Localised English-source review pass over `package.nls.zh-cn.json`
 - [ ] Telemetry-free privacy statement in README
 
@@ -56,10 +56,10 @@
 
 - [ ] `resources/icon.png` — actual extension icon (currently dropped from manifest)
 - [ ] `resources/screenshots/*.png` referenced in README
-- [ ] `.vscodeignore` audit (exclude `src/`, `*.map`, dev configs)
-- [ ] GitHub Actions release workflow (build + upload VSIX on tag)
+- [x] `.vscodeignore` audit (excludes `src/`, `*.map`, dev configs)
+- [x] GitHub Actions release workflow (semantic-release on push to `main`)
 - [x] Marketplace publisher account: `chang196700`
-- [ ] `repository` field in `package.json`
+- [ ] `repository` field in `package.json` (currently uses `--allow-missing-repository`)
 
 ### Maintenance
 
@@ -99,9 +99,11 @@
 - [x] SSE reader generator
 - [x] OpenAI compatible (DeepSeek, OpenRouter, Groq, Together, SiliconFlow, Moonshot, …)
 - [x] Anthropic native (`/v1/messages`, thinking budget, tool_results grouping)
+- [x] Anthropic auth-mode + claude-code impersonation
 - [x] Google Gemini (`streamGenerateContent?alt=sse`)
 - [x] Azure OpenAI (deployment-based URL)
 - [x] AWS Bedrock stub (throws `t('copilot-custom-provider.errors.bedrockNotSupported')`)
+- [x] `ThinkingEffort` levels: `none | adaptive | low | medium | high | max`
 
 ### Adapter & registry
 
@@ -121,11 +123,22 @@
 - [x] Model rows with Tools/Vision/Thinking capability checkboxes
 - [x] Fetch-from-remote model picker
 - [x] Add manually flow
+- [x] In-place Provider ID rename ("Change" button)
+- [x] Token-count fields accept SI/IEC suffixes (e.g. `128k`, `1Mi`)
+- [x] Blank "Custom" preset with optional type/baseUrl
 
 ### Commands & activation
 
 - [x] `copilot-custom-provider.openManager`, `copilot-custom-provider.addProvider`, `copilot-custom-provider.refreshAll`, `copilot-custom-provider.showLogs`
 - [x] Welcome notification on first install (walkthrough hook)
+- [x] Status bar item showing live provider count (clicks open manager)
+
+### CI / Release
+
+- [x] `build.yml` — compile on every push / PR
+- [x] `release.yml` — semantic-release driven publishing on `main`
+- [x] Renovate config for dependency updates
+- [x] Conventional Commits enforced via `.releaserc.json` (`conventionalcommits` preset)
 
 ### Packaging
 
