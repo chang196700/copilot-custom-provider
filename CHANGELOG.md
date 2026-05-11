@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/chang196700/copilot-custom-provider/compare/v1.5.0...v1.5.1) (2026-05-11)
+
+
+### Bug Fixes
+
+* strip non-standard JSON Schema fields from tool parameters before sending to remote APIs ([5c33574](https://github.com/chang196700/copilot-custom-provider/commit/5c3357435635cc99b0485718ab54158f8fc1e99e))
+
 # [1.5.0](https://github.com/chang196700/copilot-custom-provider/compare/v1.4.0...v1.5.0) (2026-05-08)
 
 
