@@ -153,7 +153,7 @@
 	"dependencies": {
 		"@vscode-elements/elements": "2.5.1",
 		"@vscode/codicons": "0.0.45",
-		"lit": "3.3.2"
+		"lit": "3.3.3"
 	},
 	"devDependencies": {
 		"@semantic-release/changelog": "6.0.3",
