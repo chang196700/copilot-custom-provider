@@ -1,4 +1,9 @@
 import vscode from 'vscode';
+import { resolveRequestIdleTimeout } from './requestTimeout';
+
+export function getRequestIdleTimeoutSeconds(providerValue?: unknown): number {
+	return resolveRequestIdleTimeout(providerValue, cfg().get<unknown>('requestIdleTimeoutSeconds'));
+}
 
 export const CONFIG_SECTION = 'copilot-custom-provider';
 

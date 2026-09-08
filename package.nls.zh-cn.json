@@ -79,5 +79,10 @@
 	"copilot-custom-provider.ui.remove": "删除",
 	"copilot-custom-provider.ui.tools": "工具调用",
 	"copilot-custom-provider.ui.vision": "图像输入",
-	"copilot-custom-provider.ui.thinking": "深度思考"
+	"copilot-custom-provider.ui.thinking": "深度思考",
+	"copilot-custom-provider.config.requestIdleTimeoutSeconds.description": "聊天请求连续无响应数据的超时秒数（默认 300）。提供商设置可覆盖此值。0 关闭插件计时器，但不能解除运行时或上游超时。",
+	"copilot-custom-provider.ui.requestIdleTimeout": "空闲超时（秒）",
+	"copilot-custom-provider.ui.requestIdleTimeoutHint": "留空继承全局设置（默认 300）。0 关闭插件计时器。范围：0–2147483，仅限整数。",
+	"copilot-custom-provider.ui.requestIdleTimeoutInvalid": "空闲超时必须留空或填写 0–2147483 之间的整数。",
+	"copilot-custom-provider.errors.requestIdleTimeout": "提供商连续 {0} 秒未返回数据，请求已超时"
 }

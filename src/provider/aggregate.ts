@@ -1,4 +1,5 @@
 import vscode from 'vscode';
+import { getRequestIdleTimeoutSeconds } from '../config';
 import { t } from '../i18n';
 import { logger } from '../logger';
 import { createDriver, type ProtocolDriver } from '../protocol';
@@ -42,6 +43,7 @@ function parseCompositeId(composite: string): { providerId: string; modelId: str
 }
 
 interface RequestSnapshot {
+	requestIdleTimeoutSeconds: number;
 	provider: ProviderConfig;
 	driver: ProtocolDriver;
 	apiKey: string;
@@ -148,9 +150,12 @@ export class AggregateChatProvider implements vscode.LanguageModelChatProvider {
 	private async makeSnapshot(providerId: string): Promise<RequestSnapshot> {
 		const provider = this.store.get(providerId);
 		if (!provider) throw new Error(`Provider ${providerId} not found`);
+		const requestIdleTimeoutSeconds = getRequestIdleTimeoutSeconds(
+			provider.requestIdleTimeoutSeconds,
+		);
 		const apiKey = await this.store.secrets.get(provider.id, provider.keyStorage);
 		if (!apiKey) throw new Error(t('copilot-custom-provider.errors.notConfigured'));
-		return { provider, driver: createDriver(provider.type), apiKey };
+		return { provider, driver: createDriver(provider.type), apiKey, requestIdleTimeoutSeconds };
 	}
 
 	private runStream(args: {
@@ -193,6 +198,7 @@ export class AggregateChatProvider implements vscode.LanguageModelChatProvider {
 						model: modelDef,
 						provider: snapshot.provider,
 						apiKey: snapshot.apiKey,
+						requestIdleTimeoutSeconds: snapshot.requestIdleTimeoutSeconds,
 					},
 					{
 						onContent: (text) => progress.report(new vscode.LanguageModelTextPart(text)),

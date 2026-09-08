@@ -1,3 +1,5 @@
+import { t } from '../i18n';
+import { IdleTimeoutRequest } from './idleTimeout';
 import vscode from 'vscode';
 import { logger } from '../logger';
 import { safeStringify } from '../json';
@@ -118,12 +120,16 @@ export class OpenAIDriver implements ProtocolDriver {
 		callbacks: StreamCallbacks,
 		token: vscode.CancellationToken,
 	): Promise<void> {
-		const controller = new AbortController();
-		const cancelSub = token.onCancellationRequested(() => controller.abort());
+		const request = new IdleTimeoutRequest(
+			payload.requestIdleTimeoutSeconds,
+			token,
+			t('copilot-custom-provider.errors.requestIdleTimeout', payload.requestIdleTimeoutSeconds),
+		);
+		const { controller } = request;
 		try {
 			const body = this.buildBody(payload);
 			logger.debug('OpenAI request', body);
-			const res = await fetch(this.resolveUrl(payload), {
+			const res = await request.fetch(this.resolveUrl(payload), {
 				method: 'POST',
 				headers: this.buildHeaders(payload.provider, payload.apiKey),
 				body: safeStringify(body),
@@ -140,6 +146,7 @@ export class OpenAIDriver implements ProtocolDriver {
 				if (data === '[DONE]') {
 					for (const c of pendingToolCalls.values()) callbacks.onToolCall(c);
 					pendingToolCalls.clear();
+					request.throwIfTimedOut();
 					callbacks.onDone();
 					return;
 				}
@@ -180,12 +187,15 @@ export class OpenAIDriver implements ProtocolDriver {
 					pendingToolCalls.clear();
 				}
 			}
+			request.throwIfTimedOut();
 			callbacks.onDone();
 		} catch (err) {
-			if (token.isCancellationRequested && (err as Error).name === 'AbortError') return;
-			callbacks.onError(err instanceof Error ? err : new Error(String(err)));
+			if (!request.error && token.isCancellationRequested && (err as Error).name === 'AbortError')
+				return;
+			const error = request.error ?? err;
+			callbacks.onError(error instanceof Error ? error : new Error(String(error)));
 		} finally {
-			cancelSub.dispose();
+			request.dispose();
 		}
 	}
 

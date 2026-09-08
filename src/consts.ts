@@ -4,7 +4,7 @@ export const VENDOR_ID = 'copilot-custom-provider';
 export const PROVIDERS_STATE_KEY = 'copilot-custom-provider.providers';
 export const SCHEMA_VERSION_KEY = 'copilot-custom-provider.schemaVersion';
 export const WELCOME_SHOWN_KEY = 'copilot-custom-provider.welcomeShown';
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export const SECRET_KEY_PREFIX = 'copilot-custom-provider.provider.';
 

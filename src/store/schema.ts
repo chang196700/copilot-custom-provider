@@ -1,5 +1,6 @@
 import type { ProviderConfig, ProviderConfigStoreShape } from '../types';
 import { SCHEMA_VERSION } from '../consts';
+import { isValidRequestIdleTimeout } from '../requestTimeout';
 
 /** Migrate persisted config to the current SCHEMA_VERSION. */
 export function migrate(raw: unknown): ProviderConfigStoreShape {
@@ -31,8 +32,10 @@ function isProvider(p: unknown): p is ProviderConfig {
 
 /** Strip fields that were removed from the schema so they are not re-persisted. */
 function normalizeProvider(p: ProviderConfig): ProviderConfig {
+	const { requestIdleTimeoutSeconds, ...rest } = p;
 	return {
-		...p,
+		...rest,
+		...(isValidRequestIdleTimeout(requestIdleTimeoutSeconds) ? { requestIdleTimeoutSeconds } : {}),
 		models: p.models.map((m) => {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { family: _family, ...rest } = m as typeof m & { family?: unknown };

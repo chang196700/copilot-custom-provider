@@ -93,6 +93,8 @@ export interface ModelDefinition {
 }
 
 export interface ProviderConfig {
+	/** Seconds without response data; omitted inherits global, zero disables. */
+	requestIdleTimeoutSeconds?: number;
 	/** Stable provider id (uuid-ish). Used in composite model ids `<providerId>::<modelId>`. */
 	id: string;
 	type: ProviderType;

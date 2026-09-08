@@ -1,3 +1,4 @@
+import { isValidRequestIdleTimeout } from '../../requestTimeout';
 import { LitElement, html, css, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -383,6 +384,7 @@ export class CopilotCustomProviderApp extends LitElement {
 	};
 
 	private selectProvider(id: string): void {
+		this.idleTimeoutDraft = undefined;
 		this.selectedId = id;
 		this.remoteModels = [];
 		this.renameOriginalId = undefined;
@@ -392,6 +394,7 @@ export class CopilotCustomProviderApp extends LitElement {
 	}
 
 	private addProvider(): void {
+		this.idleTimeoutDraft = undefined;
 		const preset = this.presets[0];
 		const draft: ProviderConfig = {
 			id: uid(),
@@ -428,8 +431,26 @@ export class CopilotCustomProviderApp extends LitElement {
 		this.requestUpdate();
 	}
 
+	@state() private idleTimeoutDraft: { id: string; value: string; invalid: boolean } | undefined;
+
 	private save(): void {
 		if (!this.editing) return;
+		const raw =
+			this.idleTimeoutDraft?.id === this.editing.id
+				? this.idleTimeoutDraft.value.trim()
+				: String(this.editing.requestIdleTimeoutSeconds ?? '');
+		if (
+			(this.idleTimeoutDraft?.id === this.editing.id && this.idleTimeoutDraft.invalid) ||
+			(raw !== '' && !isValidRequestIdleTimeout(Number(raw)))
+		) {
+			this.banner = {
+				kind: 'error',
+				text: this.t('copilot-custom-provider.ui.requestIdleTimeoutInvalid'),
+			};
+			return;
+		}
+		if (raw === '') delete this.editing.requestIdleTimeoutSeconds;
+		else this.editing.requestIdleTimeoutSeconds = Number(raw);
 		// If the user renamed an existing provider's id, dispatch the rename first
 		// so the host migrates the persisted record + secret atomically. The
 		// subsequent saveProvider then writes any other field changes under the
@@ -719,6 +740,29 @@ export class CopilotCustomProviderApp extends LitElement {
 				</div>
 			</div>
 
+			<div class="field">
+				<label for="request-idle-timeout"
+					>${this.t('copilot-custom-provider.ui.requestIdleTimeout')}</label
+				>
+				<vscode-textfield
+					id="request-idle-timeout"
+					type="number"
+					min="0"
+					max="2147483"
+					step="1"
+					.value=${this.idleTimeoutDraft?.id === p.id
+						? this.idleTimeoutDraft.value
+						: String(p.requestIdleTimeoutSeconds ?? '')}
+					@input=${(e: Event) => {
+						this.idleTimeoutDraft = {
+							id: p.id,
+							value: (e.target as HTMLInputElement).value,
+							invalid: !(e.target as HTMLInputElement).checkValidity(),
+						};
+					}}
+				></vscode-textfield>
+				<span class="hint">${this.t('copilot-custom-provider.ui.requestIdleTimeoutHint')}</span>
+			</div>
 			<div class="field">
 				<label>${this.t('copilot-custom-provider.ui.description')}</label>
 				<vscode-textarea

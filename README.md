@@ -79,3 +79,39 @@ config never interrupts the user.
 ## License
 
 MIT
+
+## Request idle timeout / 请求空闲超时
+
+`copilot-custom-provider.requestIdleTimeoutSeconds` defaults to **300 seconds**.
+In the provider manager, leave **Idle timeout (seconds)** blank to inherit the global
+setting, or enter an integer from 0 to 2147483 to override it. **0** disables only
+the extension timer; runtime, proxy and upstream timeouts still apply.
+
+The timer starts when the chat request is sent and resets on response headers and
+every non-empty response chunk, including SSE heartbeats, thinking and tool calls.
+Continuous output has no total duration limit. Changes apply to new requests only.
+This covers OpenAI, Anthropic, Gemini and Azure chat forwarding, not model discovery.
+
+全局默认 **300 秒**。提供商管理面板中的“空闲超时（秒）”留空继承全局，
+填写整数可覆盖，**0** 仅关闭插件计时器，无法解除运行时、代理或上游超时。
+从发送聊天请求开始计时，响应头和非空数据块（含心跳、思考、工具调用）均重置计时。
+持续有数据时不限制总时长；配置修改仅影响新请求，不影响正在生成的回复。
+
+Example `settings.json` (provider overrides are stored in the existing provider object):
+
+```jsonc
+{
+  "copilot-custom-provider.requestIdleTimeoutSeconds": 300,
+  "copilot-custom-provider.providers": [
+    {
+      // Keep the provider's existing id, type, baseUrl, models and other fields.
+      // 保留提供商现有的 id、type、baseUrl、models 等字段。
+      "requestIdleTimeoutSeconds": 600
+    }
+  ]
+}
+```
+
+Remove the provider field to inherit the global value. Existing providers inherit
+300 seconds after upgrading unless the global setting is changed.
+删除提供商的该字段即可继承全局值；升级后现有提供商默认继承全局 300 秒。

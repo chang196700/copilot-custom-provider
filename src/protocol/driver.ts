@@ -17,6 +17,7 @@ export interface NormalizedTool {
 }
 
 export interface ChatRequestPayload {
+	requestIdleTimeoutSeconds: number;
 	messages: NormalizedMessage[];
 	tools: NormalizedTool[] | undefined;
 	maxOutputTokens?: number;

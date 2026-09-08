@@ -79,5 +79,10 @@
 	"copilot-custom-provider.ui.remove": "Remove",
 	"copilot-custom-provider.ui.tools": "Tools",
 	"copilot-custom-provider.ui.vision": "Vision",
-	"copilot-custom-provider.ui.thinking": "Thinking"
+	"copilot-custom-provider.ui.thinking": "Thinking",
+	"copilot-custom-provider.config.requestIdleTimeoutSeconds.description": "Seconds without response data before a chat request is aborted (default: 300). Provider settings override this value. 0 disables the extension timer, but not runtime or upstream timeouts.",
+	"copilot-custom-provider.ui.requestIdleTimeout": "Idle timeout (seconds)",
+	"copilot-custom-provider.ui.requestIdleTimeoutHint": "Leave blank to inherit the global setting (default: 300). 0 disables the extension timer. Range: 0–2147483, integers only.",
+	"copilot-custom-provider.ui.requestIdleTimeoutInvalid": "Idle timeout must be blank or an integer from 0 to 2147483.",
+	"copilot-custom-provider.errors.requestIdleTimeout": "The provider returned no data for {0} seconds; the request timed out."
 }

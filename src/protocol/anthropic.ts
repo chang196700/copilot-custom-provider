@@ -1,3 +1,5 @@
+import { t } from '../i18n';
+import { IdleTimeoutRequest } from './idleTimeout';
 import vscode from 'vscode';
 import { logger } from '../logger';
 import { safeStringify } from '../json';
@@ -211,8 +213,12 @@ export class AnthropicDriver implements ProtocolDriver {
 		callbacks: StreamCallbacks,
 		token: vscode.CancellationToken,
 	): Promise<void> {
-		const controller = new AbortController();
-		const cancelSub = token.onCancellationRequested(() => controller.abort());
+		const request = new IdleTimeoutRequest(
+			payload.requestIdleTimeoutSeconds,
+			token,
+			t('copilot-custom-provider.errors.requestIdleTimeout', payload.requestIdleTimeoutSeconds),
+		);
+		const { controller } = request;
 		try {
 			const body = await this.buildBody(payload);
 			const headers = this.headers(payload);
@@ -225,7 +231,7 @@ export class AnthropicDriver implements ProtocolDriver {
 				if (debugHeaders['Authorization']) debugHeaders['Authorization'] = debugHeaders['Authorization'].slice(0, 20) + '...';
 				logger.debug('Claude Code impersonation request', { url, headers: debugHeaders, bodyKeys: Object.keys(body), toolCount: Array.isArray(body.tools) ? (body.tools as unknown[]).length : 0 });
 			}
-			const res = await fetch(url, {
+			const res = await request.fetch(url, {
 				method: 'POST',
 				headers,
 				body: safeStringify(body),
@@ -298,16 +304,20 @@ export class AnthropicDriver implements ProtocolDriver {
 						}
 						break;
 					case 'message_stop':
+						request.throwIfTimedOut();
 						callbacks.onDone();
 						return;
 				}
 			}
+			request.throwIfTimedOut();
 			callbacks.onDone();
 		} catch (err) {
-			if (token.isCancellationRequested && (err as Error).name === 'AbortError') return;
-			callbacks.onError(err instanceof Error ? err : new Error(String(err)));
+			if (!request.error && token.isCancellationRequested && (err as Error).name === 'AbortError')
+				return;
+			const error = request.error ?? err;
+			callbacks.onError(error instanceof Error ? error : new Error(String(error)));
 		} finally {
-			cancelSub.dispose();
+			request.dispose();
 		}
 	}
 

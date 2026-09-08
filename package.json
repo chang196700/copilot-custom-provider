@@ -108,6 +108,13 @@
 						"type": "object"
 					}
 				},
+				"copilot-custom-provider.requestIdleTimeoutSeconds": {
+					"type": "integer",
+					"default": 300,
+					"minimum": 0,
+					"maximum": 2147483,
+					"description": "%copilot-custom-provider.config.requestIdleTimeoutSeconds.description%"
+				},
 				"copilot-custom-provider.apiKeys": {
 					"type": "object",
 					"default": {},
