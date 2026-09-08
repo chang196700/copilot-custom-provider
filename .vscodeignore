@@ -19,3 +19,5 @@ TODO.md
 !out/**/*.css
 !out/**/*.html
 node_modules/**
+
+tests/**
