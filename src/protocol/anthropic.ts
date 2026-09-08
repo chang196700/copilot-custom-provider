@@ -126,7 +126,7 @@ export class AnthropicDriver implements ProtocolDriver {
 
 		const base: Record<string, string> = {
 			'Content-Type': 'application/json',
-			'Accept': 'application/json',
+			Accept: 'application/json',
 			'anthropic-version': provider.extraHeaders?.['anthropic-version'] ?? '2023-06-01',
 			...(provider.extraHeaders ?? {}),
 		};
@@ -140,7 +140,7 @@ export class AnthropicDriver implements ProtocolDriver {
 		if (impersonation) {
 			const version = impersonation.version ?? '2.1.121';
 			const userType = impersonation.userType ?? 'external';
-			const entrypoint = impersonation.entrypoint ?? 'sdk-cli';
+			const entrypoint = impersonation.entrypoint ?? 'cli';
 			const sessionId = impersonation.sessionId ?? getImpersonationSessionId();
 
 			// Core Claude Code identification headers (verified from captured traffic)
@@ -148,16 +148,19 @@ export class AnthropicDriver implements ProtocolDriver {
 			base['x-app'] = 'cli';
 			base['x-claude-code-session-id'] = sessionId;
 
-			// Full beta list from Claude Code for modern models (captured from real traffic).
-			// Proxies validate this set to confirm the request is from Claude Code.
+			// Full beta list matching CLIProxyAPI's baseBetas (updated 2025-07).
+			// oauth-2025-04-20 enables OAuth token support; structured-outputs/fast-mode/
+			// redact-thinking/token-efficient-tools are newer feature betas.
 			const defaultBetas = [
 				'claude-code-20250219',
+				'oauth-2025-04-20',
 				'interleaved-thinking-2025-05-14',
 				'context-management-2025-06-27',
 				'prompt-caching-scope-2026-01-05',
-				'advisor-tool-2026-03-01',
-				'advanced-tool-use-2025-11-20',
-				'effort-2025-11-24',
+				'structured-outputs-2025-12-15',
+				'fast-mode-2026-02-01',
+				'redact-thinking-2026-02-12',
+				'token-efficient-tools-2026-03-28',
 			];
 			const betasToSend = [...defaultBetas];
 			if (impersonation.extraBetas && impersonation.extraBetas.length > 0) {
@@ -177,8 +180,11 @@ export class AnthropicDriver implements ProtocolDriver {
 			base['x-stainless-arch'] = 'x64';
 			base['x-stainless-retry-count'] = '0';
 			base['x-stainless-timeout'] = '600';
-			// Required by the Anthropic SDK when running outside a browser sandbox.
-			base['anthropic-dangerous-direct-browser-access'] = 'true';
+			// Only send for API key mode; real Claude Code CLI does not send this header
+			// for OAuth/bearer tokens (per CLIProxyAPI issue #1621).
+			if (authMode === 'apiKey') {
+				base['anthropic-dangerous-direct-browser-access'] = 'true';
+			}
 		}
 
 		return base;
@@ -188,7 +194,7 @@ export class AnthropicDriver implements ProtocolDriver {
 		const impersonation = resolveImpersonation(provider, undefined);
 		const authMode = resolveAuthMode(provider, impersonation);
 		const headers: Record<string, string> = {
-			'Accept': 'application/json',
+			Accept: 'application/json',
 			'anthropic-version': provider.extraHeaders?.['anthropic-version'] ?? '2023-06-01',
 			...(provider.extraHeaders ?? {}),
 		};
@@ -314,7 +320,7 @@ export class AnthropicDriver implements ProtocolDriver {
 		const systemSegments: string[] = [];
 		if (impersonation) {
 			const version = impersonation.version ?? '2.1.121';
-			const entrypoint = impersonation.entrypoint ?? 'sdk-cli';
+			const entrypoint = impersonation.entrypoint ?? 'cli';
 			// Compute fingerprint from first user message, matching Claude Code's
 			// computeFingerprintFromMessages() algorithm exactly.
 			// cch= is NOT included: it's a Bun-native attestation token computed by
@@ -327,10 +333,10 @@ export class AnthropicDriver implements ProtocolDriver {
 				type: 'text',
 				text: `x-anthropic-billing-header: cc_version=${version}.${fingerprint}; cc_entrypoint=${entrypoint};`,
 			});
-			// Claude Code uses SDK agent identity string (not "official CLI for Claude")
+			// Official Claude Code CLI identity string (matches CLIProxyAPI's checkSystemInstructions).
 			systemBlocks.push({
 				type: 'text',
-				text: 'You are a Claude agent, built on Anthropic\'s Claude Agent SDK.',
+				text: "You are Claude Code, Anthropic's official CLI for Claude.",
 				cache_control: { type: 'ephemeral' },
 			});
 		}
