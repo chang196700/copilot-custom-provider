@@ -1,3 +1,15 @@
+# [1.6.0](https://github.com/chang196700/copilot-custom-provider/compare/v1.5.1...v1.6.0) (2026-09-10)
+
+
+### Bug Fixes
+
+* **anthropic:** align Claude Code impersonation with CLI proxy expectations ([5e9a8d4](https://github.com/chang196700/copilot-custom-provider/commit/5e9a8d47cf2557f428e126e3215e247afcfcf2b8))
+
+
+### Features
+
+* **timeout:** add global and per-provider request idle limits ([029985c](https://github.com/chang196700/copilot-custom-provider/commit/029985c0770ffabb5960281a3822b546cd8f2f8a))
+
 ## [1.5.1](https://github.com/chang196700/copilot-custom-provider/compare/v1.5.0...v1.5.1) (2026-05-11)
 
 
